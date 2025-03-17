@@ -28,8 +28,6 @@ services:
     volumes:
       - ./beats/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - ./beats/log:/var/log/work
-    depends_on:
-      - logstash
     environment:
       - ELASTICSEARCH_URL=http://172.19.0.2:9200
       - ELASTICSEARCH_USERNAME=elastic
