@@ -1,0 +1,31 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+
+filebeat.inputs:
+- type: log
+  json.keys_under_root: true
+  json.add_error_key: true
+  #json.message_key: message
+  paths:
+    - /var/log/work/*
+
+output.elasticsearch:
+  hosts: '${LOGSTASH_HOSTS:es:9200}'
+  username: '${ELASTICSEARCH_USERNAME:elastic}'
+  password: '${ELASTICSEARCH_PASSWORD:test}'
+  index: "nginx-log-%{+yyyy-MM-dd}"
+  template.name: "nginx"
+  template.pattern: "nginx-*"
+  template.overwrite: true
+  template.enabled: true
+
+setup.template:
+  name: "nginx"
+  pattern: "nginx-*"
+  setup.template.settings:
+    index.number_of_shards: 1
+    index.codec: best_compression
+
+  setup.dashboards.enabled: true
+  setup.ilm.enabled: true
