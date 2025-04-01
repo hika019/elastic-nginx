@@ -9,6 +9,11 @@ filebeat.inputs:
   #json.message_key: message
   paths:
     - /var/log/work/*
+  processors:
+    - dissect:
+        field: "referer"
+        target_prefix: "referer_domain"
+        tokenizer: "%{domain}/%{rest}"
 
 output.elasticsearch:
   hosts: '${LOGSTASH_HOSTS:es:9200}'
