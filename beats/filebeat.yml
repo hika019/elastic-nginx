@@ -13,7 +13,7 @@ filebeat.inputs:
     - dissect:
         field: "referer"
         target_prefix: "referer_domain"
-        tokenizer: "//%{domain}/%{rest}"
+        tokenizer: "%{prot}://%{domain}/%{rest}"
 
 output.elasticsearch:
   hosts: '${LOGSTASH_HOSTS:es:9200}'
