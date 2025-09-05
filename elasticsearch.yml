@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: elastic-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      securityContext:
+        fsGroup: 1000
+          #runAsUser: 1000
+          #runAsNonRoot: true
+      initContainers:
+      - name: fix-permissions
+        image: busybox:1.35
+        command: ['sh', '-c']
+        args:
+          - |
+            chown -R 1000:1000 /usr/share/elasticsearch/data
+            chmod -R 755 /usr/share/elasticsearch/data
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: elasticsearch-storage
+          mountPath: /usr/share/elasticsearch/data
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        env:
+        - name: discovery.type
+          value: single-node
+        - name: cluster.name
+          value: elastic-cluster
+        - name: ES_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+        - name: xpack.security.enabled
+          value: "false"
+        volumeMounts:
+        - name: elasticsearch-storage
+          mountPath: /usr/share/elasticsearch/data
+      volumes:
+      - name: elasticsearch-storage
+        persistentVolumeClaim:
+          claimName: pvc-elasticsearch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: elastic-nginx
+spec:
+  type: NodePort
+  selector:
+    app: elasticsearch
+  ports:
+  - name: http
+    port: 9200
+    targetPort: 9200
+    nodePort: 30092
+  - name: transport
+    port: 9300
+    targetPort: 9300
+    nodePort: 30093
