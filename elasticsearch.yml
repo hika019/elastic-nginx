@@ -39,13 +39,18 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsGroup: 1000
+        resources:
+          requests:
+            memory: "2Gi"
+          limits:
+            memory: "2Gi"
         env:
         - name: discovery.type
           value: single-node
         - name: cluster.name
           value: elastic-cluster
         - name: ES_JAVA_OPTS
-          value: "-Xms512m -Xmx512m"
+          value: "-Xms1g -Xmx1G"
         - name: xpack.security.enabled
           value: "false"
         volumeMounts:
