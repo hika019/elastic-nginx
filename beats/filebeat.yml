@@ -10,6 +10,13 @@ filebeat.inputs:
   paths:
     - /var/log/work/*
   processors:
+    - timestamp:
+        field: time
+        target_field: "@timestamp"
+        layouts:
+          - '2006-01-02T15:04:05Z07:00'
+        test:
+          - '2025-02-02T09:52:13+09:00'
     - dissect:
         field: "referer"
         target_prefix: "referer_domain"
