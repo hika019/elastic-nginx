@@ -1,0 +1,75 @@
+
+{
+  "index_patterns": [
+    "nginx-log-*"
+  ],
+  "priority": 200,
+  "template": {
+    "settings": {
+      "index.lifecycle.name": "filebeat",
+      "index.default_pipeline": "nginx-geoip",
+      "index.number_of_shards": 1,
+      "index.number_of_replicas": 0
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "status": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "vhost": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "uri": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "method": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "ip": {
+          "type": "ip"
+        },
+        "source": {
+          "properties": {
+            "ip": {
+              "type": "ip"
+            },
+            "geo": {
+              "properties": {
+                "location": {
+                  "type": "geo_point"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
