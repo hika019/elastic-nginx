@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: elastic-nginx
+
+resources:
+  - namespace.yml
+  - pv-pvc-elastic.yml
+  - pv-pvc-kibana.yml
+  - elasticsearch.yml
+  - kibana.yml
+  - elasticsearch-init-job.yml
+  - kibana-init-job.yml
+
+configMapGenerator:
+  - name: nginx-elasticsearch-init
+    files:
+      - init.sh=elasticsearch-init/init.sh
+      - ilm-policy.json=elasticsearch-init/ilm-policy.json
+      - geoip-pipeline.json=elasticsearch-init/geoip-pipeline.json
+      - index-template.json=elasticsearch-init/index-template.json
+
+  - name: nginx-kibana-init
+    files:
+      - init.sh=kibana-init/init.sh
+      - dashboards.ndjson=kibana-init/dashboards.ndjson
+
+generatorOptions:
+  disableNameSuffixHash: true

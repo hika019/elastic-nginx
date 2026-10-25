@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kibana-init
+  namespace: elastic-nginx
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+
+      initContainers:
+        - name: wait-index-template
+          image: curlimages/curl:8.12.1
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              attempt=0
+              until curl -fsS --max-time 5 \
+                http://elasticsearch:9200/_index_template/nginx-log > /dev/null; do
+                attempt=$((attempt + 1))
+                [ "$attempt" -lt 60 ] || exit 1
+                sleep 5
+              done
+
+      containers:
+        - name: kibana-init
+          image: curlimages/curl:8.12.1
+          command: ["/bin/sh", "/config/init.sh"]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-kibana-init
