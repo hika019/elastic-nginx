@@ -41,16 +41,16 @@ spec:
           runAsGroup: 1000
         resources:
           requests:
-            memory: "2Gi"
+            memory: "4Gi"
           limits:
-            memory: "2Gi"
+            memory: "4Gi"
         env:
         - name: discovery.type
           value: single-node
         - name: cluster.name
           value: elastic-cluster
         - name: ES_JAVA_OPTS
-          value: "-Xms1g -Xmx1G"
+          value: "-Xms1g -Xmx2G"
         - name: xpack.security.enabled
           value: "false"
         volumeMounts:
