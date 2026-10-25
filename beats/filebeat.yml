@@ -3,41 +3,31 @@ filebeat.config:
     path: ${path.config}/modules.d/*.yml
 
 filebeat.inputs:
-- type: log
-  json.keys_under_root: true
-  json.add_error_key: true
-  #json.message_key: message
-  paths:
-    - /var/log/work/*
-  processors:
-    - timestamp:
-        field: time
-        target_field: "@timestamp"
-        layouts:
-          - '2006-01-02T15:04:05Z07:00'
-        test:
-          - '2025-02-02T09:52:13+09:00'
-    - dissect:
-        field: "referer"
-        target_prefix: "referer_domain"
-        tokenizer: "%{prot}://%{domain}/%{rest}"
+  - type: log
+    json.keys_under_root: true
+    json.add_error_key: true
+    paths:
+      - /var/log/work/*
+
+    processors:
+      - timestamp:
+          field: time
+          target_field: "@timestamp"
+          layouts:
+            - '2006-01-02T15:04:05Z07:00'
+          test:
+            - '2025-02-02T09:52:13+09:00'
+
+      - dissect:
+          field: referer
+          target_prefix: referer_domain
+          tokenizer: "%{prot}://%{domain}/%{rest}"
 
 output.elasticsearch:
-  hosts: '${LOGSTASH_HOSTS:es:9200}'
+  hosts: '${LOGSTASH_HOSTS:http://es:9200}'
   username: '${ELASTICSEARCH_USERNAME:elastic}'
   password: '${ELASTICSEARCH_PASSWORD:test}'
   index: "nginx-log-%{+yyyy-MM-dd}"
-  template.name: "nginx"
-  template.pattern: "nginx-*"
-  template.overwrite: true
-  template.enabled: true
 
-setup.template:
-  name: "nginx"
-  pattern: "nginx-*"
-  setup.template.settings:
-    index.number_of_shards: 1
-    index.codec: best_compression
-
-  setup.dashboards.enabled: true
-  setup.ilm.enabled: true
+setup.ilm.enabled: false
+setup.template.enabled: false

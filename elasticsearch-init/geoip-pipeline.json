@@ -1,0 +1,21 @@
+
+{
+  "description": "NGINX GeoIP enrichment",
+  "processors": [
+    {
+      "set": {
+        "field": "source.ip",
+        "copy_from": "ip",
+        "ignore_empty_value": true
+      }
+    },
+    {
+      "geoip": {
+        "field": "source.ip",
+        "target_field": "source.geo",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    }
+  ]
+}
