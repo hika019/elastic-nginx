@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.20.100
-    path: /volume1/k8s_volume
+    path: /volume1/k8s_volume/elastic-nginx/kibana
   persistentVolumeReclaimPolicy: Retain
 ---
 apiVersion: v1
