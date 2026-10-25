@@ -19,6 +19,7 @@ metadata:
   name: pvc-kibana
   namespace: elastic-nginx
 spec:
+  storageClassName: ""
   accessModes:
     - ReadWriteMany
   resources:
